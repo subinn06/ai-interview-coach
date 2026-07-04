@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from app.schemas.user import UserCreate, UserLogin, UserResponse
+from app.schemas.user import UserCreate, UserResponse
 from app.db.dependencies import get_db
 from app.services.auth_service import register_user, authenticate_user
 from app.core.jwt import create_access_token
+from app.core.auth import get_current_user
+from app.models.user import User
 
 # auth router
 router = APIRouter(
@@ -35,13 +38,13 @@ def register(
 # login endpoint
 @router.post("/login")
 def login(
-    payload: UserLogin,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
     user = authenticate_user(
         db,
-        email=payload.email,
-        password=payload.password
+        email=form_data.username,
+        password=form_data.password
     )
     if not user:
         raise HTTPException(
@@ -55,3 +58,10 @@ def login(
         "access_token": access_token,
         "token_type": "bearer"
     }
+
+# protected route
+@router.get("/me", response_model=UserResponse)
+def get_me(
+    current_user: User = Depends(get_current_user)
+):
+    return current_user
