@@ -1,32 +1,20 @@
-from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.config import settings
 from app.core.oauth import oauth2_scheme
 from app.db.dependencies import get_db
 from app.models.user import User
-
-def decode_access_token(token: str):
-    try:
-        payload = jwt.decode(
-            token,
-            settings.SECRET_KEY,
-            algorithms=[settings.ALGORITHM]
-        )
-        return payload
-    except JWTError:
-        return None
+from app.core.jwt import decode_token
 
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ):
-    payload = decode_access_token(token)
-    if not payload:
+    payload = decode_token(token)
+    if not payload or payload.get("type") != "access":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token",
+            detail="Invalid or expired access token",
             headers={"WWW-Authenticate": "Bearer"}
         )
         

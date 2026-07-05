@@ -1,50 +1,42 @@
-from sqlalchemy.orm import Session
-
-from app.models.user import User
+from app.repositories.user_repository import UserRepository
 from app.core.security import hash_password, verify_password
+from app.core.jwt import create_access_token, create_refresh_token
+from app.models.user import User
 
-# register
-def register_user(
-    db: Session,
-    email: str,
-    full_name: str,
-    password: str
-):
-    existing_user = (
-        db.query(User)
-        .filter(User.email == email)
-        .first()
-    )
-    if existing_user:
-        raise ValueError(
-            "User already exists"
+class AuthService:
+    def __init__(self, repo: UserRepository):
+        self.repo = repo
+
+    # register
+    def register(self, email, full_name, password):
+        if self.repo.get_by_email(email):
+            raise ValueError("User already exists")
+
+        user = User(
+            email=email,
+            full_name=full_name,
+            password_hash=hash_password(password),
         )
-    user = User(
-        email=email,
-        full_name=full_name,
-        password_hash=hash_password(password)
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
 
-# login
-def authenticate_user(
-    db: Session,
-    email: str,
-    password: str
-):
-    user = (
-        db.query(User)
-        .filter(User.email == email)
-        .first()
-    )
-    if not user:
-        return None
-    if not verify_password(
-        password,
-        user.password_hash
-    ):
-        return None
-    return user
+        return self.repo.create(user)
+
+    # login
+    def login(self, email, password):
+        user = self.repo.get_by_email(email)
+        if not user:
+            return None
+
+        if not verify_password(
+            password,
+            user.password_hash,
+        ):
+            return None
+
+        access_token = create_access_token({"sub": str(user.id)})
+        refresh_token = create_refresh_token({"sub": str(user.id)})
+        
+        return {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "token_type": "bearer"
+        }

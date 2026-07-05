@@ -2,11 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import UserCreate, UserResponse, TokenData, TokenRefreshRequest
 from app.db.dependencies import get_db
-from app.services.auth_service import register_user, authenticate_user
-from app.core.jwt import create_access_token
+from app.repositories.user_repository import UserRepository
+from app.services.auth_service import AuthService
 from app.core.auth import get_current_user
+from app.core.jwt import decode_token, create_access_token, create_refresh_token
 from app.models.user import User
 
 # auth router
@@ -21,9 +22,10 @@ def register(
     payload: UserCreate,
     db: Session = Depends(get_db)
 ):
+    repo = UserRepository(db)
+    service = AuthService(repo)
     try:
-        user = register_user(
-            db,
+        user = service.register(
             email=payload.email,
             full_name=payload.full_name,
             password=payload.password
@@ -36,28 +38,72 @@ def register(
         )
 
 # login endpoint
-@router.post("/login")
+@router.post("/login", response_model=TokenData)
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
-    user = authenticate_user(
-        db,
+    repo = UserRepository(db)
+    service = AuthService(repo)
+
+    token_data = service.login(
         email=form_data.username,
-        password=form_data.password
+        password=form_data.password,
     )
-    if not user:
+
+    if not token_data:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"}
         )
 
-    access_token = create_access_token(data={"sub": str(user.id)})
+    return token_data
+
+# refresh token endpoint
+@router.post("/refresh", response_model=TokenData)
+def refresh(
+    payload: TokenRefreshRequest,
+    db: Session = Depends(get_db)
+):
+    token_payload = decode_token(payload.refresh_token)
+    if not token_payload or token_payload.get("type") != "refresh":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token"
+        )
+        
+    user_id = token_payload.get("sub")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token payload"
+        )
+        
+    repo = UserRepository(db)
+    user = repo.get_by_id(user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found"
+        )
+        
+    # generate new token pair
+    access_token = create_access_token({"sub": str(user.id)})
+    refresh_token = create_refresh_token({"sub": str(user.id)})
+    
     return {
         "access_token": access_token,
+        "refresh_token": refresh_token,
         "token_type": "bearer"
     }
+
+# logout endpoint
+@router.post("/logout")
+def logout(
+    current_user: User = Depends(get_current_user)
+):
+    return {"message": "Logged out successfully"}
 
 # protected route
 @router.get("/me", response_model=UserResponse)
