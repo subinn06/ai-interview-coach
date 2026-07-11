@@ -25,6 +25,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 from app.models.base import Base
 from app.models.user import User
+from app.models.resume import Resume
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
