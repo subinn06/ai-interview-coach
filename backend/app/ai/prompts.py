@@ -36,3 +36,62 @@ Specifically extract the following details:
 Job Description:
 {description}
 """
+
+    @staticmethod
+    def interview_questions(resume_analysis: dict, job_analysis: dict, difficulty: str, count: int = 5) -> str:
+        return f"""You are a professional technical interviewer.
+
+Your goal is to generate a list of {count} highly tailored technical and behavioral interview questions for a candidate.
+
+Use the candidate's Resume Analysis and the Job Description Analysis to customize the questions:
+- Evaluate the gap between the candidate's strengths (or missing skills) and the job's required skills.
+- Ask questions that verify they possess the required skills, or probe into missing/weaker areas from their resume.
+- Tailor the depth of questions to the chosen difficulty level: '{difficulty}'.
+- Ensure questions are varied across categories (e.g., Coding, System Design, Communication, Database).
+
+Candidate Resume Analysis:
+{resume_analysis}
+
+Job Description Analysis:
+{job_analysis}
+
+Target Difficulty: {difficulty}
+
+Generate exactly {count} questions. For each question:
+- question: The actual question to ask the user.
+- category: The topic category (e.g., Python, Architecture, Database).
+- expected_topics: A list of 3-5 key concepts, keywords, or topics the candidate should mention in their answer.
+"""
+
+    @staticmethod
+    def evaluate_answer(question: str, expected_topics: list[str], answer: str) -> str:
+        return f"""You are a technical interviewer evaluating a candidate's answer.
+
+Question Asked: {question}
+Expected Topics/Keywords: {expected_topics}
+Candidate's Answer: {answer}
+
+Provide a structured evaluation:
+1. score: An integer score from 0 to 100 based on the accuracy, completeness, and clarity of the answer.
+   - If the answer is blank, nonsensical, or completely wrong, give a very low score (0-20).
+   - If they hit most expected topics with clear phrasing, give a high score (80+).
+2. feedback: A concise summary of their answer's quality.
+3. strengths: A list of points they got right or explained well.
+4. weaknesses: A list of missing details, errors, or gaps in their answer.
+5. improvements: Actionable advice on how they could structure or explain their answer better.
+"""
+
+    @staticmethod
+    def generate_feedback(qa_history: list[dict]) -> str:
+        return f"""You are a senior technical interviewer and hiring manager compiling the final evaluation report for a candidate.
+
+Review the history of questions, answers, and scores from their interview session:
+{qa_history}
+
+Provide a structured final feedback report:
+1. overall_score: Estimate a final score between 0 and 100 representing their overall performance.
+2. technical: Score (0-100) representing their technical knowledge and correctness.
+3. communication: Score (0-100) representing how clearly, concisely, and professionally they explained their answers.
+4. confidence: Score (0-100) representing the certainty, depth of expertise, and structure in their delivery.
+5. summary: A concise high-level feedback summary outlining strengths, weaknesses, and a final recommendation.
+"""

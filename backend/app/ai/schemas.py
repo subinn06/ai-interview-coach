@@ -14,3 +14,25 @@ class JobAnalysisSchema(BaseModel):
     responsibilities: list[str]
     keywords: list[str]
     summary: str
+
+class GeneratedQuestionSchema(BaseModel):
+    question: str
+    category: str
+    expected_topics: list[str]
+
+class GeneratedQuestionListSchema(BaseModel):
+    questions: list[GeneratedQuestionSchema]
+
+class AnswerEvaluationSchema(BaseModel):
+    score: int
+    feedback: str
+    strengths: list[str]
+    weaknesses: list[str]
+    improvements: list[str]
+
+class FeedbackReportSchema(BaseModel):
+    overall_score: int
+    technical: int
+    communication: int
+    confidence: int
+    summary: str
