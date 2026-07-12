@@ -17,3 +17,5 @@ class User(UUIDMixin, Base):
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
 
     resumes = relationship("Resume", back_populates="user", cascade="all, delete-orphan")
+    
+    job_descriptions = relationship("JobDescription", back_populates="user", cascade="all, delete-orphan")

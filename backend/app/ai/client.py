@@ -10,17 +10,17 @@ class GeminiClient:
     def generate(self, prompt: str) -> str:
         # standard content generation
         response = self.client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-flash-latest",
             contents=prompt
         )
         if response.text is None:
-            raise ValueError("Gemini API returned a response with no text content.")
+            return ""
         return response.text
 
     def generate_structured(self, prompt: str, schema) -> str:
         # structured content generation returning validated json matching the schema
         response = self.client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-flash-latest",
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
@@ -28,5 +28,5 @@ class GeminiClient:
             )
         )
         if response.text is None:
-            raise ValueError("Gemini API returned a response with no text content.")
+            return ""
         return response.text
