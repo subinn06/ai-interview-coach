@@ -30,9 +30,18 @@ class AnswerEvaluationSchema(BaseModel):
     weaknesses: list[str]
     improvements: list[str]
 
-class FeedbackReportSchema(BaseModel):
+class RecommendedTopicSchema(BaseModel):
+    topic: str
+    reason: str
+    priority: str
+
+class FeedbackSchema(BaseModel):
     overall_score: int
-    technical: int
-    communication: int
-    confidence: int
+    technical_score: int
+    communication_score: int
+    problem_solving_score: int
+    confidence_score: int
+    strengths: list[str]
+    improvement_areas: list[str]
+    recommended_topics: list[RecommendedTopicSchema]
     summary: str

@@ -14,6 +14,9 @@ from app.models.interview_question import InterviewQuestion
 from app.models.interview_answer import InterviewAnswer
 from app.schemas.interview import InterviewStartRequest, AnswerSubmitRequest
 
+from app.services.analytics_service import AnalyticsService
+from app.services.feedback_service import FeedbackService
+
 class InterviewService:
     def __init__(self, db: Session):
         self.db = db
@@ -63,6 +66,11 @@ class InterviewService:
             status="started"
         )
         session = self.repo.create_session(session)
+
+        # track event
+        AnalyticsService(self.repo.db).track_event(
+            user_id, "INTERVIEW_STARTED", {"session_id": str(session.id), "difficulty": payload.difficulty}
+        )
 
         # save generated questions
         db_questions = []
@@ -135,9 +143,20 @@ class InterviewService:
             session.total_score = round(sum(scores) / len(scores)) if scores else 0
             session.completed_at = datetime.now(timezone.utc)
             
-            # commit session state changes
             self.repo.db.add(session)
             self.repo.db.commit()
+
+            # log event
+            AnalyticsService(self.repo.db).track_event(
+                user_id, "INTERVIEW_COMPLETED", {"session_id": str(session.id), "total_score": session.total_score}
+            )
+
+            # auto generate feedback report card
+            try:
+                FeedbackService(self.repo.db).generate_report(user_id, session.id)
+            except Exception as e:
+                # do not block the primary answer submission if report compiler encounters an api error
+                pass
 
         return answer, next_question, eval_result
 
@@ -159,6 +178,18 @@ class InterviewService:
         self.repo.db.add(session)
         self.repo.db.commit()
         self.repo.db.refresh(session)
+
+        # log event
+        AnalyticsService(self.repo.db).track_event(
+            user_id, "INTERVIEW_COMPLETED", {"session_id": str(session.id), "total_score": session.total_score}
+        )
+
+        # auto generate feedback report card
+        try:
+            FeedbackService(self.repo.db).generate_report(user_id, session.id)
+        except Exception:
+            pass
+
         return session
 
     def get_session(self, user_id: UUID, session_id: UUID) -> Optional[InterviewSession]:

@@ -90,8 +90,15 @@ Review the history of questions, answers, and scores from their interview sessio
 
 Provide a structured final feedback report:
 1. overall_score: Estimate a final score between 0 and 100 representing their overall performance.
-2. technical: Score (0-100) representing their technical knowledge and correctness.
-3. communication: Score (0-100) representing how clearly, concisely, and professionally they explained their answers.
-4. confidence: Score (0-100) representing the certainty, depth of expertise, and structure in their delivery.
-5. summary: A concise high-level feedback summary outlining strengths, weaknesses, and a final recommendation.
+2. technical_score: Score (0-100) representing their technical knowledge and correctness.
+3. communication_score: Score (0-100) representing how clearly, concisely, and professionally they explained their answers.
+4. problem_solving_score: Score (0-100) representing their capacity to handle edge cases, explain trade-offs, and think through system engineering questions.
+5. confidence_score: Score (0-100) representing the certainty, depth of expertise, and structure in their delivery.
+6. strengths: A list of candidate's core strengths highlighted during the session.
+7. improvement_areas: A list of gaps, errors, or areas where the candidate needs to study.
+8. recommended_topics: A list of recommended learning topics. For each topic, specify:
+   - topic: The name of the subject or library to study.
+   - reason: A brief explanation of why they need to study this (referencing gaps in their answers).
+   - priority: High, Medium, or Low based on how critical it is for the role.
+9. summary: A concise high-level feedback summary outlining overall performance, potential, and a final advice.
 """

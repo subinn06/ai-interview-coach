@@ -32,6 +32,8 @@ from app.models.job_analysis import JobAnalysis
 from app.models.interview_session import InterviewSession
 from app.models.interview_question import InterviewQuestion
 from app.models.interview_answer import InterviewAnswer
+from app.models.feedback_report import FeedbackReport
+from app.models.analytics_event import AnalyticsEvent
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

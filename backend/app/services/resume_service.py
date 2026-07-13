@@ -11,6 +11,8 @@ from app.models.resume import Resume
 from app.models.resume_analysis import ResumeAnalysis
 from app.models.user import User
 
+from app.services.analytics_service import AnalyticsService
+
 class ResumeService:
     def __init__(self, db: Session):
         self.repo = ResumeRepository(db)
@@ -34,7 +36,13 @@ class ResumeService:
             file_path=file_path,
             extracted_text=extracted_text
         )
-        return self.repo.create(resume)
+        created_resume = self.repo.create(resume)
+        
+        # track event
+        AnalyticsService(self.repo.db).track_event(
+            user.id, "RESUME_UPLOADED", {"filename": file.filename}
+        )
+        return created_resume
 
     def analyze(self, user_id: UUID, resume_id: UUID) -> ResumeAnalysis:
         # fetch resume and verify ownership
@@ -59,4 +67,10 @@ class ResumeService:
             summary=analysis_result.summary,
             raw_response=analysis_result.model_dump()
         )
-        return self.analysis_repo.create(analysis)
+        created_analysis = self.analysis_repo.create(analysis)
+        
+        # track event
+        AnalyticsService(self.analysis_repo.db).track_event(
+            user_id, "RESUME_ANALYZED", {"ats_score": analysis.ats_score}
+        )
+        return created_analysis
