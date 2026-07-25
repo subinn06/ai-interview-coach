@@ -3,22 +3,16 @@ import PublicLayout from "../layouts/PublicLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
+import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 
 // inline placeholder page components for other features
 const LandingPlaceholder = () => (
   <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 text-slate-900 p-8">
     <h1 className="text-4xl font-extrabold text-blue-600 mb-4 animate-pulse">AI Interview Coach</h1>
-    <p className="text-lg text-slate-600 mb-6 font-medium">Frontend Foundation Ready</p>
+    <p className="text-lg text-slate-600 mb-6 font-medium font-sans">Frontend Foundation Ready</p>
     <a href="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg shadow-md transition-all">
       Go to Login
     </a>
-  </div>
-);
-
-const DashboardPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-2 text-slate-800">Dashboard</h2>
-    <p className="text-slate-500">Candidate analytics metrics and mock summaries will be rendered here.</p>
   </div>
 );
 
@@ -84,7 +78,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "dashboard",
-        element: <DashboardPlaceholder />
+        element: <DashboardPage />
       },
       {
         path: "resumes",
