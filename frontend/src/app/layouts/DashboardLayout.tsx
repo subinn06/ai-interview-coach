@@ -1,12 +1,13 @@
 import { Outlet, Navigate, Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/auth-store";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 import { LayoutDashboard, FileText, Briefcase, MessageSquare, BarChart3, User, LogOut } from "lucide-react";
 
 export default function DashboardLayout() {
-  const { accessToken, clear } = useAuthStore();
+  const { accessToken, user } = useAuthStore();
+  const { handleLogout } = useLogout();
   const location = useLocation();
 
-  // redirecting unauthorized users
   if (!accessToken) {
     return <Navigate to="/login" replace />;
   }
@@ -51,8 +52,8 @@ export default function DashboardLayout() {
         </nav>
         <div className="p-4 border-t border-slate-800">
           <button
-            onClick={clear}
-            className="flex w-full items-center px-4 py-3 text-sm font-medium text-red-400 hover:bg-slate-800 hover:text-red-300 rounded-xl transition-all duration-200"
+            onClick={handleLogout}
+            className="flex w-full items-center px-4 py-3 text-sm font-medium text-red-400 hover:bg-slate-800 hover:text-red-300 rounded-xl transition-all duration-200 cursor-pointer"
           >
             <LogOut className="w-5 h-5 mr-3 shrink-0" />
             Sign Out
@@ -64,7 +65,7 @@ export default function DashboardLayout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-8">
           <div className="text-slate-500 text-sm font-medium">
-            Welcome back! Ready for your next mock session?
+            Welcome back{user?.full_name ? `, ${user.full_name}` : ""}! Ready for your next mock session?
           </div>
         </header>
         <main className="flex-1 overflow-y-auto bg-slate-50/50">

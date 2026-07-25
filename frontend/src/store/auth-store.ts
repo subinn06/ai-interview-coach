@@ -1,36 +1,34 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-interface UserProfile {
-  id: string;
-  email: string;
-  full_name?: string;
-}
+import type { User } from "@/features/auth/types/auth.types";
 
 interface AuthState {
   accessToken: string | null;
-  user: UserProfile | null;
+  user: User | null;
+  isAuthenticated: boolean;
   setAccessToken: (token: string | null) => void;
-  setUser: (user: UserProfile | null) => void;
+  setUser: (user: User | null) => void;
+  loginSuccess: (token: string, user?: User) => void;
+  logout: () => void;
   clear: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
-      // seed with a default mock token
-      accessToken: "mock-foundation-sprint-token",
-      user: {
-        id: "mock-id",
-        email: "candidate@example.com",
-        full_name: "Mock Candidate"
-      },
-      setAccessToken: (token) => set({ accessToken: token }),
+      accessToken: null,
+      user: null,
+      isAuthenticated: false,
+      setAccessToken: (token) =>
+        set({ accessToken: token, isAuthenticated: Boolean(token) }),
       setUser: (user) => set({ user }),
-      clear: () => set({ accessToken: null, user: null }),
+      loginSuccess: (token, user = undefined) =>
+        set({ accessToken: token, user: user || null, isAuthenticated: true }),
+      logout: () => set({ accessToken: null, user: null, isAuthenticated: false }),
+      clear: () => set({ accessToken: null, user: null, isAuthenticated: false }),
     }),
     {
-      name: "auth-storage", // key name in localStorage
+      name: "auth-storage",
     }
   )
 );
