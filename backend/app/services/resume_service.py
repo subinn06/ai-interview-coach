@@ -74,3 +74,17 @@ class ResumeService:
             user_id, "RESUME_ANALYZED", {"ats_score": analysis.ats_score}
         )
         return created_analysis
+
+    def get_user_resumes(self, user_id: UUID) -> list[Resume]:
+        return self.repo.get_by_user(user_id)
+
+    def get_resume(self, user_id: UUID, resume_id: UUID) -> Resume:
+        resume = self.repo.get_by_id(resume_id)
+        if not resume or resume.user_id != user_id:
+            raise ValueError("Resume not found")
+        return resume
+
+    def delete_resume(self, user_id: UUID, resume_id: UUID) -> None:
+        resume = self.get_resume(user_id, resume_id)
+        self.file_service.delete_resume(resume.stored_filename)
+        self.repo.delete(resume)

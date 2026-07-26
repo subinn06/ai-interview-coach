@@ -35,3 +35,8 @@ class FileService:
             f.write(file.file.read())
             
         return stored_filename, file_path
+
+    def delete_resume(self, stored_filename: str) -> None:
+        file_path = os.path.join(self.upload_dir, stored_filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
