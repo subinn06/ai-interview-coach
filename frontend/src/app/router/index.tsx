@@ -6,6 +6,8 @@ import RegisterPage from "@/features/auth/pages/RegisterPage";
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 import ResumeListPage from "@/features/resume/pages/ResumeListPage";
 import ResumeDetailPage from "@/features/resume/pages/ResumeDetailPage";
+import JobListPage from "@/features/jobs/pages/JobListPage";
+import JobDetailPage from "@/features/jobs/pages/JobDetailPage";
 
 // inline placeholder page components for other features
 const LandingPlaceholder = () => (
@@ -15,13 +17,6 @@ const LandingPlaceholder = () => (
     <a href="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg shadow-md transition-all">
       Go to Login
     </a>
-  </div>
-);
-
-const JobsPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-2 text-slate-800">Job Target Listings</h2>
-    <p className="text-slate-500">Insert custom target requirements and compare keyword mismatches.</p>
   </div>
 );
 
@@ -85,7 +80,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "jobs",
-        element: <JobsPlaceholder />
+        element: <JobListPage />
+      },
+      {
+        path: "jobs/:id",
+        element: <JobDetailPage />
       },
       {
         path: "interview",
