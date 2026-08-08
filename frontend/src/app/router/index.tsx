@@ -14,8 +14,10 @@ import InterviewReportPage from "@/features/interview/pages/InterviewReportPage"
 import InterviewHistoryPage from "@/features/interview/pages/InterviewHistoryPage";
 import ReportsPage from "@/features/reports/pages/ReportsPage";
 import ReportPage from "@/features/reports/pages/ReportPage";
+import ProfilePage from "@/features/profile/pages/ProfilePage";
+import SettingsPage from "@/features/profile/pages/SettingsPage";
 
-// inline placeholder page components for other features
+// inline placeholder page components for public landing page
 const LandingPlaceholder = () => (
   <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 text-slate-900 p-8">
     <h1 className="text-4xl font-extrabold text-blue-600 mb-4 animate-pulse">AI Interview Coach</h1>
@@ -23,13 +25,6 @@ const LandingPlaceholder = () => (
     <a href="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg shadow-md transition-all">
       Go to Login
     </a>
-  </div>
-);
-
-const ProfilePlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-2 text-slate-800">Candidate Profile & Settings</h2>
-    <p className="text-slate-500 font-medium">Customize mock difficulty configurations and credentials.</p>
   </div>
 );
 
@@ -108,7 +103,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "profile",
-        element: <ProfilePlaceholder />
+        element: <ProfilePage />
+      },
+      {
+        path: "settings",
+        element: <SettingsPage />
       }
     ]
   },

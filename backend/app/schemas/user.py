@@ -30,3 +30,10 @@ class TokenData(BaseModel):
 # token refresh request
 class TokenRefreshRequest(BaseModel):
     refresh_token: str
+
+class UserUpdate(BaseModel):
+    full_name: str
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str

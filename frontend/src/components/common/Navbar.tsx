@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, Bell, User, LogOut, ChevronDown } from "lucide-react";
+import { Menu, Bell, User, LogOut, ChevronDown, Settings } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 
@@ -28,6 +28,8 @@ export default function Navbar({ onMobileMenuToggle }: NavbarProps) {
         return "Coaching Feedback Reports";
       case "/profile":
         return "Candidate Profile";
+      case "/settings":
+        return "Application Settings";
       default:
         return "AI Interview Coach";
     }
@@ -95,6 +97,15 @@ export default function Navbar({ onMobileMenuToggle }: NavbarProps) {
               >
                 <User className="w-4 h-4 mr-2" />
                 Profile
+              </Link>
+
+              <Link
+                to="/settings"
+                onClick={() => setDropdownOpen(false)}
+                className="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
               </Link>
 
               <button
