@@ -78,3 +78,34 @@ class FeedbackService:
         self.db.commit()
 
         return report
+
+    def get_report_by_id(self, user_id: UUID, report_id: UUID) -> FeedbackReport | None:
+        return (
+            self.db.query(FeedbackReport)
+            .join(InterviewSession)
+            .filter(
+                FeedbackReport.id == report_id,
+                InterviewSession.user_id == user_id
+            )
+            .first()
+        )
+
+    def get_report_by_session(self, user_id: UUID, session_id: UUID) -> FeedbackReport | None:
+        return (
+            self.db.query(FeedbackReport)
+            .join(InterviewSession)
+            .filter(
+                FeedbackReport.session_id == session_id,
+                InterviewSession.user_id == user_id
+            )
+            .first()
+        )
+
+    def get_user_reports(self, user_id: UUID) -> list[FeedbackReport]:
+        return (
+            self.db.query(FeedbackReport)
+            .join(InterviewSession)
+            .filter(InterviewSession.user_id == user_id)
+            .order_by(FeedbackReport.created_at.desc())
+            .all()
+        )

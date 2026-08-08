@@ -12,6 +12,8 @@ import InterviewSetupPage from "@/features/interview/pages/InterviewSetupPage";
 import InterviewSessionPage from "@/features/interview/pages/InterviewSessionPage";
 import InterviewReportPage from "@/features/interview/pages/InterviewReportPage";
 import InterviewHistoryPage from "@/features/interview/pages/InterviewHistoryPage";
+import ReportsPage from "@/features/reports/pages/ReportsPage";
+import ReportPage from "@/features/reports/pages/ReportPage";
 
 // inline placeholder page components for other features
 const LandingPlaceholder = () => (
@@ -21,13 +23,6 @@ const LandingPlaceholder = () => (
     <a href="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg shadow-md transition-all">
       Go to Login
     </a>
-  </div>
-);
-
-const ReportsPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-2 text-slate-800">AI Coaching Feedback Reports</h2>
-    <p className="text-slate-500 font-medium">Use the Interview Practice History to view reports.</p>
   </div>
 );
 
@@ -105,7 +100,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "reports",
-        element: <ReportsPlaceholder />
+        element: <ReportsPage />
+      },
+      {
+        path: "reports/:id",
+        element: <ReportPage />
       },
       {
         path: "profile",
