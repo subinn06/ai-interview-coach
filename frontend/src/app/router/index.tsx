@@ -8,6 +8,10 @@ import ResumeListPage from "@/features/resume/pages/ResumeListPage";
 import ResumeDetailPage from "@/features/resume/pages/ResumeDetailPage";
 import JobListPage from "@/features/jobs/pages/JobListPage";
 import JobDetailPage from "@/features/jobs/pages/JobDetailPage";
+import InterviewSetupPage from "@/features/interview/pages/InterviewSetupPage";
+import InterviewSessionPage from "@/features/interview/pages/InterviewSessionPage";
+import InterviewReportPage from "@/features/interview/pages/InterviewReportPage";
+import InterviewHistoryPage from "@/features/interview/pages/InterviewHistoryPage";
 
 // inline placeholder page components for other features
 const LandingPlaceholder = () => (
@@ -20,24 +24,17 @@ const LandingPlaceholder = () => (
   </div>
 );
 
-const InterviewPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-2 text-slate-800">Interview Session Simulator</h2>
-    <p className="text-slate-500">AI audio/text dynamic interview chat loop will run here.</p>
-  </div>
-);
-
 const ReportsPlaceholder = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-2 text-slate-800">AI Coaching Feedback Reports</h2>
-    <p className="text-slate-500">Structured evaluation card highlighting topic gaps and strengths.</p>
+    <p className="text-slate-500 font-medium">Use the Interview Practice History to view reports.</p>
   </div>
 );
 
 const ProfilePlaceholder = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-2 text-slate-800">Candidate Profile & Settings</h2>
-    <p className="text-slate-500">Customize mock difficulty configurations and credentials.</p>
+    <p className="text-slate-500 font-medium">Customize mock difficulty configurations and credentials.</p>
   </div>
 );
 
@@ -88,7 +85,23 @@ export const router = createBrowserRouter([
       },
       {
         path: "interview",
-        element: <InterviewPlaceholder />
+        element: <Navigate to="/interview/setup" replace />
+      },
+      {
+        path: "interview/setup",
+        element: <InterviewSetupPage />
+      },
+      {
+        path: "interview/:sessionId",
+        element: <InterviewSessionPage />
+      },
+      {
+        path: "interview/report/:sessionId",
+        element: <InterviewReportPage />
+      },
+      {
+        path: "interviews",
+        element: <InterviewHistoryPage />
       },
       {
         path: "reports",

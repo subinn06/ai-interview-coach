@@ -120,3 +120,18 @@ def get_interview(
             detail="Interview session not found"
         )
     return session
+
+@router.delete("/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_interview(
+    session_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    service = InterviewService(db)
+    try:
+        service.delete_session(current_user.id, session_id)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )

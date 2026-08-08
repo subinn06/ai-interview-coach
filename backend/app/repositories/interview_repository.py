@@ -50,3 +50,7 @@ class InterviewRepository:
             .order_by(InterviewSession.started_at.desc())
             .all()
         )
+
+    def delete_session(self, session: InterviewSession) -> None:
+        self.db.delete(session)
+        self.db.commit()

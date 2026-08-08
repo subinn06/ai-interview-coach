@@ -200,3 +200,9 @@ class InterviewService:
 
     def get_history(self, user_id: UUID) -> list[InterviewSession]:
         return self.repo.get_user_sessions(user_id)
+
+    def delete_session(self, user_id: UUID, session_id: UUID) -> None:
+        session = self.get_session(user_id, session_id)
+        if not session:
+            raise ValueError("Interview session not found")
+        self.repo.delete_session(session)
