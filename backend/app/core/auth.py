@@ -26,9 +26,11 @@ def get_current_user(
             headers={"WWW-Authenticate": "Bearer"}
         )
         
+    import uuid
+    val_id = uuid.UUID(user_id) if isinstance(user_id, str) else user_id
     user = (
         db.query(User)
-        .filter(User.id == user_id)
+        .filter(User.id == val_id)
         .first()
     )
     

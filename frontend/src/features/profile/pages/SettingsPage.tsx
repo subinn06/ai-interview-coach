@@ -16,12 +16,12 @@ export default function SettingsPage() {
   ] as const;
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-8 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
           Application Settings
         </h1>
-        <p className="text-sm text-slate-500 mt-0.5">
+        <p className="text-sm text-slate-500 mt-1">
           Customize AI interview defaults, change credentials, and manage account security.
         </p>
       </div>

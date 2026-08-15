@@ -1,9 +1,15 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import LoginForm from "../components/LoginForm";
 import Card from "@/components/ui/Card";
+import { useAuthStore } from "@/store/auth-store";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">

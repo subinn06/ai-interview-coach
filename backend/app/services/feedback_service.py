@@ -13,10 +13,12 @@ class FeedbackService:
         self.generator = FeedbackGenerator()
 
     def generate_report(self, user_id: UUID, session_id: UUID) -> FeedbackReport:
+        u_id = UUID(user_id) if isinstance(user_id, str) else user_id
+        s_id = UUID(session_id) if isinstance(session_id, str) else session_id
         # fetch session and verify ownership
         session = self.db.query(InterviewSession).filter(
-            InterviewSession.id == session_id,
-            InterviewSession.user_id == user_id
+            InterviewSession.id == s_id,
+            InterviewSession.user_id == u_id
         ).first()
         if not session:
             raise ValueError("Interview session not found")
@@ -42,7 +44,7 @@ class FeedbackService:
 
         # clear existing report if any
         old_report = self.db.query(FeedbackReport).filter(
-            FeedbackReport.session_id == session_id
+            FeedbackReport.session_id == s_id
         ).first()
         if old_report:
             self.db.delete(old_report)
@@ -50,7 +52,7 @@ class FeedbackService:
 
         # save report to db
         report = FeedbackReport(
-            session_id=session_id,
+            session_id=s_id,
             overall_score=report_data.overall_score,
             technical_score=report_data.technical_score,
             communication_score=report_data.communication_score,
@@ -67,10 +69,10 @@ class FeedbackService:
 
         # log report_generated analytics event
         event = AnalyticsEvent(
-            user_id=user_id,
+            user_id=u_id,
             event_type="REPORT_GENERATED",
             metadata_json={
-                "session_id": str(session_id),
+                "session_id": str(s_id),
                 "overall_score": report_data.overall_score
             }
         )
@@ -80,32 +82,37 @@ class FeedbackService:
         return report
 
     def get_report_by_id(self, user_id: UUID, report_id: UUID) -> FeedbackReport | None:
+        u_id = UUID(user_id) if isinstance(user_id, str) else user_id
+        r_id = UUID(report_id) if isinstance(report_id, str) else report_id
         return (
             self.db.query(FeedbackReport)
             .join(InterviewSession)
             .filter(
-                FeedbackReport.id == report_id,
-                InterviewSession.user_id == user_id
+                FeedbackReport.id == r_id,
+                InterviewSession.user_id == u_id
             )
             .first()
         )
 
     def get_report_by_session(self, user_id: UUID, session_id: UUID) -> FeedbackReport | None:
+        u_id = UUID(user_id) if isinstance(user_id, str) else user_id
+        s_id = UUID(session_id) if isinstance(session_id, str) else session_id
         return (
             self.db.query(FeedbackReport)
             .join(InterviewSession)
             .filter(
-                FeedbackReport.session_id == session_id,
-                InterviewSession.user_id == user_id
+                FeedbackReport.session_id == s_id,
+                InterviewSession.user_id == u_id
             )
             .first()
         )
 
     def get_user_reports(self, user_id: UUID) -> list[FeedbackReport]:
+        u_id = UUID(user_id) if isinstance(user_id, str) else user_id
         return (
             self.db.query(FeedbackReport)
             .join(InterviewSession)
-            .filter(InterviewSession.user_id == user_id)
+            .filter(InterviewSession.user_id == u_id)
             .order_by(FeedbackReport.created_at.desc())
             .all()
         )

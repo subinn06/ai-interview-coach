@@ -16,6 +16,9 @@ export const useInterviews = () => {
   return useQuery({
     queryKey: ["interviews"],
     queryFn: getInterviewsApi,
+    staleTime: 5 * 60 * 1000, // 5 minutes - list changes on start/finish/delete
+    gcTime: 15 * 60 * 1000,   // 15 minutes
+    retry: 1,
   });
 };
 
@@ -24,6 +27,9 @@ export const useInterview = (sessionId?: string) => {
     queryKey: ["interviews", sessionId],
     queryFn: () => getInterviewApi(sessionId!),
     enabled: Boolean(sessionId),
+    staleTime: 30 * 1000,      // 30 seconds - active session needs freshness
+    gcTime: 10 * 60 * 1000,    // 10 minutes
+    retry: 2,                  // retry more for active sessions
   });
 };
 

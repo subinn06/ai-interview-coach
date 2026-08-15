@@ -6,13 +6,13 @@ import Button from "@/components/ui/Button";
 
 export default function InterviewPreferences() {
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
-    () => (localStorage.getItem("pref_difficulty") as any) || "medium"
+    () => (localStorage.getItem("pref_difficulty") as "easy" | "medium" | "hard") || "medium"
   );
   const [questionCount, setQuestionCount] = useState<number>(
     () => Number(localStorage.getItem("pref_question_count")) || 5
   );
   const [style, setStyle] = useState<"technical" | "behavioral" | "mixed">(
-    () => (localStorage.getItem("pref_style") as any) || "technical"
+    () => (localStorage.getItem("pref_style") as "technical" | "behavioral" | "mixed") || "technical"
   );
 
   const handleSave = () => {

@@ -30,6 +30,9 @@ export const useProfile = () => {
       setUser(mapUserProfileToUser(data));
       return data;
     },
+    staleTime: 15 * 60 * 1000, // 15 minutes - user profile info is static
+    gcTime: 30 * 60 * 1000,    // 30 minutes
+    retry: 1,
   });
 };
 

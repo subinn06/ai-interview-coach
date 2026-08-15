@@ -1,32 +1,53 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { useAuthStore } from "@/store/auth-store";
 import PublicLayout from "../layouts/PublicLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
-import LoginPage from "@/features/auth/pages/LoginPage";
-import RegisterPage from "@/features/auth/pages/RegisterPage";
-import DashboardPage from "@/features/dashboard/pages/DashboardPage";
-import ResumeListPage from "@/features/resume/pages/ResumeListPage";
-import ResumeDetailPage from "@/features/resume/pages/ResumeDetailPage";
-import JobListPage from "@/features/jobs/pages/JobListPage";
-import JobDetailPage from "@/features/jobs/pages/JobDetailPage";
-import InterviewSetupPage from "@/features/interview/pages/InterviewSetupPage";
-import InterviewSessionPage from "@/features/interview/pages/InterviewSessionPage";
-import InterviewReportPage from "@/features/interview/pages/InterviewReportPage";
-import InterviewHistoryPage from "@/features/interview/pages/InterviewHistoryPage";
-import ReportsPage from "@/features/reports/pages/ReportsPage";
-import ReportPage from "@/features/reports/pages/ReportPage";
-import ProfilePage from "@/features/profile/pages/ProfilePage";
-import SettingsPage from "@/features/profile/pages/SettingsPage";
 
-// inline placeholder page components for public landing page
-const LandingPlaceholder = () => (
-  <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 text-slate-900 p-8">
-    <h1 className="text-4xl font-extrabold text-blue-600 mb-4 animate-pulse">AI Interview Coach</h1>
-    <p className="text-lg text-slate-600 mb-6 font-medium">Frontend Foundation Ready</p>
-    <a href="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg shadow-md transition-all">
-      Go to Login
-    </a>
-  </div>
-);
+// route level code splitting via react.lazy
+// each page is loaded on demand, reducing initial bundle size
+const LoginPage = lazy(() => import("@/features/auth/pages/LoginPage"));
+const RegisterPage = lazy(() => import("@/features/auth/pages/RegisterPage"));
+const DashboardPage = lazy(() => import("@/features/dashboard/pages/DashboardPage"));
+const ResumeListPage = lazy(() => import("@/features/resume/pages/ResumeListPage"));
+const ResumeDetailPage = lazy(() => import("@/features/resume/pages/ResumeDetailPage"));
+const JobListPage = lazy(() => import("@/features/jobs/pages/JobListPage"));
+const JobDetailPage = lazy(() => import("@/features/jobs/pages/JobDetailPage"));
+const InterviewSetupPage = lazy(() => import("@/features/interview/pages/InterviewSetupPage"));
+const InterviewSessionPage = lazy(() => import("@/features/interview/pages/InterviewSessionPage"));
+const InterviewReportPage = lazy(() => import("@/features/interview/pages/InterviewReportPage"));
+const InterviewHistoryPage = lazy(() => import("@/features/interview/pages/InterviewHistoryPage"));
+const ReportsPage = lazy(() => import("@/features/reports/pages/ReportsPage"));
+const ReportPage = lazy(() => import("@/features/reports/pages/ReportPage"));
+const ProfilePage = lazy(() => import("@/features/profile/pages/ProfilePage"));
+const SettingsPage = lazy(() => import("@/features/profile/pages/SettingsPage"));
+
+// lightweight suspense fallback - renders instantly while chunks load
+function PageLoader() {
+  return (
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+        <span className="text-xs font-medium text-slate-400">Loading…</span>
+      </div>
+    </div>
+  );
+}
+
+// helper to wrap lazy components in suspense
+function withSuspense(Component: React.LazyExoticComponent<React.ComponentType>) {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Component />
+    </Suspense>
+  );
+}
+
+// automatic root redirect - goes to /dashboard if logged in, otherwise /login
+const RootRedirect = () => {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  return <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />;
+};
 
 export const router = createBrowserRouter([
   // public routes
@@ -36,15 +57,15 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <LandingPlaceholder />
+        element: <RootRedirect />
       },
       {
         path: "login",
-        element: <LoginPage />
+        element: withSuspense(LoginPage)
       },
       {
         path: "register",
-        element: <RegisterPage />
+        element: withSuspense(RegisterPage)
       }
     ]
   },
@@ -55,23 +76,23 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "dashboard",
-        element: <DashboardPage />
+        element: withSuspense(DashboardPage)
       },
       {
         path: "resumes",
-        element: <ResumeListPage />
+        element: withSuspense(ResumeListPage)
       },
       {
         path: "resumes/:id",
-        element: <ResumeDetailPage />
+        element: withSuspense(ResumeDetailPage)
       },
       {
         path: "jobs",
-        element: <JobListPage />
+        element: withSuspense(JobListPage)
       },
       {
         path: "jobs/:id",
-        element: <JobDetailPage />
+        element: withSuspense(JobDetailPage)
       },
       {
         path: "interview",
@@ -79,35 +100,35 @@ export const router = createBrowserRouter([
       },
       {
         path: "interview/setup",
-        element: <InterviewSetupPage />
+        element: withSuspense(InterviewSetupPage)
       },
       {
         path: "interview/:sessionId",
-        element: <InterviewSessionPage />
+        element: withSuspense(InterviewSessionPage)
       },
       {
         path: "interview/report/:sessionId",
-        element: <InterviewReportPage />
+        element: withSuspense(InterviewReportPage)
       },
       {
         path: "interviews",
-        element: <InterviewHistoryPage />
+        element: withSuspense(InterviewHistoryPage)
       },
       {
         path: "reports",
-        element: <ReportsPage />
+        element: withSuspense(ReportsPage)
       },
       {
         path: "reports/:id",
-        element: <ReportPage />
+        element: withSuspense(ReportPage)
       },
       {
         path: "profile",
-        element: <ProfilePage />
+        element: withSuspense(ProfilePage)
       },
       {
         path: "settings",
-        element: <SettingsPage />
+        element: withSuspense(SettingsPage)
       }
     ]
   },
@@ -117,3 +138,4 @@ export const router = createBrowserRouter([
     element: <Navigate to="/" replace />
   }
 ]);
+

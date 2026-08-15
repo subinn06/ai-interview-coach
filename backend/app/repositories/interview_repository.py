@@ -15,7 +15,8 @@ class InterviewRepository:
         return session
 
     def get_session(self, session_id: UUID) -> InterviewSession | None:
-        return self.db.query(InterviewSession).filter(InterviewSession.id == session_id).first()
+        val_id = UUID(session_id) if isinstance(session_id, str) else session_id
+        return self.db.query(InterviewSession).filter(InterviewSession.id == val_id).first()
 
     def save_questions(self, questions: list[InterviewQuestion]) -> list[InterviewQuestion]:
         self.db.add_all(questions)
@@ -25,7 +26,8 @@ class InterviewRepository:
         return questions
 
     def get_question(self, question_id: UUID) -> InterviewQuestion | None:
-        return self.db.query(InterviewQuestion).filter(InterviewQuestion.id == question_id).first()
+        val_id = UUID(question_id) if isinstance(question_id, str) else question_id
+        return self.db.query(InterviewQuestion).filter(InterviewQuestion.id == val_id).first()
 
     def save_answer(self, answer: InterviewAnswer) -> InterviewAnswer:
         self.db.add(answer)
@@ -34,19 +36,21 @@ class InterviewRepository:
         return answer
 
     def get_next_unanswered_question(self, session_id: UUID) -> InterviewQuestion | None:
+        val_id = UUID(session_id) if isinstance(session_id, str) else session_id
         return (
             self.db.query(InterviewQuestion)
             .outerjoin(InterviewAnswer)
-            .filter(InterviewQuestion.session_id == session_id)
+            .filter(InterviewQuestion.session_id == val_id)
             .filter(InterviewAnswer.id == None)
             .order_by(InterviewQuestion.order_number.asc())
             .first()
         )
 
     def get_user_sessions(self, user_id: UUID) -> list[InterviewSession]:
+        val_id = UUID(user_id) if isinstance(user_id, str) else user_id
         return (
             self.db.query(InterviewSession)
-            .filter(InterviewSession.user_id == user_id)
+            .filter(InterviewSession.user_id == val_id)
             .order_by(InterviewSession.started_at.desc())
             .all()
         )

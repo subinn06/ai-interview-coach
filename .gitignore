@@ -1,19 +1,24 @@
-# Python
+# python
 __pycache__/
 *.pyc
-.env
 venv/
 
-# Node
+# environment variables
+.env
+.env.*
+!.env.example
+
+# node
 node_modules/
 
-# Build
+# build
 dist/
 build/
 
-# IDE
+# ide
 .vscode/
 .idea/
 
-# Uploads
+# uploads and database
 uploads/
+*.db

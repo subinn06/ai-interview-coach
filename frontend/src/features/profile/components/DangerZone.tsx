@@ -1,16 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Trash2, AlertTriangle } from "lucide-react";
 import { useDeleteAccount } from "../hooks/useProfile";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
+import { getErrorMessage } from "@/lib/error-handler";
 
 export default function DangerZone() {
   const navigate = useNavigate();
   const deleteMutation = useDeleteAccount();
   const [isOpen, setIsOpen] = useState(false);
   const [confirmInput, setConfirmInput] = useState("");
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        setIsOpen(false);
+        setConfirmInput("");
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
 
   const handleDelete = () => {
     if (confirmInput.trim().toUpperCase() !== "DELETE") {
@@ -20,12 +32,11 @@ export default function DangerZone() {
 
     deleteMutation.mutate(undefined, {
       onSuccess: () => {
-        toast.success("Your account has been deleted.");
+        toast.success("Account permanently deleted.");
         navigate("/login");
       },
-      onError: (err: any) => {
-        const message = err.response?.data?.detail || "Failed to delete account.";
-        toast.error(message);
+      onError: (err: unknown) => {
+        toast.error(getErrorMessage(err));
       },
     });
   };
@@ -56,11 +67,16 @@ export default function DangerZone() {
 
       {/* confirmation modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="danger-zone-modal-title"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+        >
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-200">
             <div className="flex items-center gap-3 text-rose-600">
               <AlertTriangle className="w-6 h-6 shrink-0" />
-              <h4 className="text-lg font-bold text-slate-900">
+              <h4 id="danger-zone-modal-title" className="text-lg font-bold text-slate-900">
                 Confirm Permanent Account Deletion
               </h4>
             </div>
@@ -70,10 +86,11 @@ export default function DangerZone() {
             </p>
 
             <div className="space-y-1.5 pt-2">
-              <label className="block text-xs font-semibold text-slate-700">
+              <label htmlFor="delete-confirm-input" className="block text-xs font-semibold text-slate-700">
                 Type <span className="font-mono font-bold text-rose-600">DELETE</span> to confirm:
               </label>
               <input
+                id="delete-confirm-input"
                 type="text"
                 value={confirmInput}
                 onChange={(e) => setConfirmInput(e.target.value)}
@@ -98,6 +115,7 @@ export default function DangerZone() {
                 className="bg-rose-600 hover:bg-rose-700 text-white"
                 onClick={handleDelete}
                 isLoading={deleteMutation.isPending}
+                loadingText="Deleting account..."
                 disabled={confirmInput.trim().toUpperCase() !== "DELETE"}
               >
                 Confirm & Delete

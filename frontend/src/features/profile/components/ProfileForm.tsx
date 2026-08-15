@@ -9,6 +9,8 @@ import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import type { UserProfile } from "../types/profile.types";
 
+import { getErrorMessage } from "@/lib/error-handler";
+
 interface ProfileFormProps {
   user: UserProfile | null;
 }
@@ -32,9 +34,8 @@ export default function ProfileForm({ user }: ProfileFormProps) {
       onSuccess: () => {
         toast.success("Profile updated successfully!");
       },
-      onError: (err: any) => {
-        const message = err.response?.data?.detail || "Failed to update profile.";
-        toast.error(message);
+      onError: (err: unknown) => {
+        toast.error(getErrorMessage(err));
       },
     });
   };
@@ -82,6 +83,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
           type="submit"
           size="sm"
           isLoading={updateMutation.isPending}
+          loadingText="Saving changes..."
           className="flex items-center gap-1.5"
         >
           <Save className="w-4 h-4" />

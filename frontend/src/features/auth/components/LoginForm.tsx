@@ -10,6 +10,8 @@ import { useAuthStore } from "@/store/auth-store";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 
+import { getErrorMessage } from "@/lib/error-handler";
+
 interface LoginFormProps {
   onSuccess?: () => void;
 }
@@ -37,14 +39,13 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             const userProfile = await getCurrentUserApi();
             loginSuccess(res.access_token, userProfile);
           } catch {
+            // intentionally empty
           }
           toast.success("Logged in successfully!");
           if (onSuccess) onSuccess();
         },
-        onError: (err: any) => {
-          const message =
-            err.response?.data?.detail || "Invalid email or password. Please try again.";
-          toast.error(message);
+        onError: (err: unknown) => {
+          toast.error(getErrorMessage(err));
         },
       }
     );
@@ -70,6 +71,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         />
         <button
           type="button"
+          aria-label={showPassword ? "Hide password" : "Show password"}
           onClick={() => setShowPassword(!showPassword)}
           className="absolute right-3 top-9 text-slate-400 hover:text-slate-600 cursor-pointer"
         >
@@ -81,6 +83,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         type="submit"
         className="w-full mt-2 flex items-center justify-center gap-2"
         isLoading={loginMutation.isPending}
+        loadingText="Signing in..."
       >
         <LogIn className="w-4 h-4" />
         Sign In

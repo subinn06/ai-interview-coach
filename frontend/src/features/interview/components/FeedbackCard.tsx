@@ -1,3 +1,4 @@
+import { memo } from "react";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import {
@@ -16,7 +17,7 @@ interface FeedbackCardProps {
   isLoadingNext?: boolean;
 }
 
-export default function FeedbackCard({
+const FeedbackCard = memo(function FeedbackCard({
   evaluation,
   onNext,
   isLastQuestion = false,
@@ -106,6 +107,7 @@ export default function FeedbackCard({
         <Button
           onClick={onNext}
           isLoading={isLoadingNext}
+          loadingText={isLastQuestion ? "Generating report..." : "Loading next question..."}
           className="flex items-center gap-2 px-6"
         >
           <span>{isLastQuestion ? "Finish Interview & View Report" : "Continue to Next Question"}</span>
@@ -114,4 +116,6 @@ export default function FeedbackCard({
       </div>
     </Card>
   );
-}
+});
+
+export default FeedbackCard;

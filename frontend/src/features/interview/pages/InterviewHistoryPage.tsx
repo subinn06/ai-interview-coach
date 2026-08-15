@@ -7,6 +7,8 @@ import Button from "@/components/ui/Button";
 import EmptyState from "@/components/common/EmptyState";
 import { SkeletonCard } from "@/components/common/Skeleton";
 
+import { getErrorMessage } from "@/lib/error-handler";
+
 export default function InterviewHistoryPage() {
   const navigate = useNavigate();
   const { data: sessions, isLoading, isError } = useInterviews();
@@ -18,25 +20,23 @@ export default function InterviewHistoryPage() {
         onSuccess: () => {
           toast.success("Interview session deleted.");
         },
-        onError: (err: any) => {
-          const message =
-            err.response?.data?.detail || "Failed to delete interview session.";
-          toast.error(message);
+        onError: (err: unknown) => {
+          toast.error(getErrorMessage(err));
         },
       });
     }
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto">
       {/* top header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
             <History className="w-6 h-6 text-blue-600" />
             Interview Practice History
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-sm text-slate-500 mt-1">
             Review past mock interview sessions, scores, and AI feedback reports.
           </p>
         </div>
@@ -53,7 +53,7 @@ export default function InterviewHistoryPage() {
 
       {/* history grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />
@@ -67,13 +67,13 @@ export default function InterviewHistoryPage() {
       ) : !sessions || sessions.length === 0 ? (
         <EmptyState
           icon={History}
-          title="No Mock Interviews Completed Yet"
-          description="Start your first AI technical mock interview to practice answering role-specific questions and receive personalized AI coaching."
-          actionLabel="Start First Interview"
+          title="You haven't completed an interview yet."
+          description="Start a mock technical interview to practice answering role-specific questions and get AI feedback."
+          actionLabel="Start Interview"
           onAction={() => navigate("/interview/setup")}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {sessions.map((s) => {
             const isCompleted = s.status === "completed";
             const score = s.total_score || 0;
@@ -134,6 +134,7 @@ export default function InterviewHistoryPage() {
                     variant="ghost"
                     className="px-2.5 text-xs text-red-500 hover:text-red-700 hover:bg-red-50"
                     title="Delete Interview History"
+                    aria-label={`Delete interview history record ${s.id.substring(0, 8)}`}
                     isLoading={deleteMutation.isPending && deleteMutation.variables === s.id}
                   >
                     <Trash2 className="w-3.5 h-3.5" />

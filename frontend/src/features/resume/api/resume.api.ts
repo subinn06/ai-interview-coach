@@ -8,7 +8,7 @@ export const uploadResumeApi = async (
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await api.post<Resume>("/resumes/", formData, {
+  const response = await api.post<Resume>("/resumes", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -23,7 +23,7 @@ export const uploadResumeApi = async (
 };
 
 export const getResumesApi = async (): Promise<Resume[]> => {
-  const response = await api.get<Resume[]>("/resumes/");
+  const response = await api.get<Resume[]>("/resumes");
   return response.data;
 };
 

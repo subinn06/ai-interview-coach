@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "../store/auth-store";
+import { normalizeApiError } from "./error-handler";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
@@ -18,7 +19,7 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
-    return Promise.reject(error);
+    return Promise.reject(normalizeApiError(error));
   }
 );
 
@@ -26,11 +27,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    const normalized = normalizeApiError(error);
+    if (normalized.status === 401) {
       // clear token state to trigger automatic router redirect
       useAuthStore.getState().clear();
     }
-    return Promise.reject(error);
+    return Promise.reject(normalized);
   }
 );
 

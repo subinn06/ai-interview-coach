@@ -6,12 +6,12 @@ import type {
 } from "../types/jobs.types";
 
 export const createJobApi = async (data: CreateJobRequest): Promise<JobDescription> => {
-  const response = await api.post<JobDescription>("/jobs/", data);
+  const response = await api.post<JobDescription>("/jobs", data);
   return response.data;
 };
 
 export const getJobsApi = async (): Promise<JobDescription[]> => {
-  const response = await api.get<JobDescription[]>("/jobs/");
+  const response = await api.get<JobDescription[]>("/jobs");
   return response.data;
 };
 

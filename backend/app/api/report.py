@@ -14,7 +14,6 @@ router = APIRouter(
 )
 
 @router.get("", response_model=list[FeedbackReportResponse])
-@router.get("/", response_model=list[FeedbackReportResponse])
 def get_user_reports(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)

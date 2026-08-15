@@ -14,6 +14,8 @@ import Button from "@/components/ui/Button";
 import EmptyState from "@/components/common/EmptyState";
 import Loader from "@/components/ui/Loader";
 
+import { getErrorMessage } from "@/lib/error-handler";
+
 export default function InterviewSetupPage() {
   const navigate = useNavigate();
 
@@ -71,18 +73,16 @@ export default function InterviewSetupPage() {
           state: { firstQuestion: res.first_question },
         });
       },
-      onError: (err: any) => {
-        const message =
-          err.response?.data?.detail || "Failed to initialize interview session.";
-        toast.error(message);
+      onError: (err: unknown) => {
+        toast.error(getErrorMessage(err));
       },
     });
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
           <Sparkles className="w-6 h-6 text-blue-600" />
           Configure AI Interview Session
         </h1>
@@ -95,11 +95,12 @@ export default function InterviewSetupPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* resume selector */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+            <label htmlFor="resume-select-input" className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
               <FileText className="w-4 h-4 text-blue-600" />
               1. Select Resume
             </label>
             <select
+              id="resume-select-input"
               {...register("resume_id")}
               className="w-full px-4 py-2.5 text-sm bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
             >
@@ -119,11 +120,12 @@ export default function InterviewSetupPage() {
 
           {/* job target selector */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+            <label htmlFor="job-select-input" className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
               <Briefcase className="w-4 h-4 text-purple-600" />
               2. Select Target Job Posting
             </label>
             <select
+              id="job-select-input"
               {...register("job_description_id")}
               className="w-full px-4 py-2.5 text-sm bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
             >
@@ -178,6 +180,7 @@ export default function InterviewSetupPage() {
             <Button
               type="submit"
               isLoading={startMutation.isPending}
+              loadingText="Initializing interview session..."
               size="md"
               className="flex items-center gap-2 px-8"
             >

@@ -8,6 +8,8 @@ import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 
+import { getErrorMessage } from "@/lib/error-handler";
+
 export default function SecuritySettings() {
   const changePasswordMutation = useChangePassword();
 
@@ -31,9 +33,8 @@ export default function SecuritySettings() {
           toast.success("Password changed successfully.");
           reset();
         },
-        onError: (err: any) => {
-          const message = err.response?.data?.detail || "Failed to change password.";
-          toast.error(message);
+        onError: (err: unknown) => {
+          toast.error(getErrorMessage(err));
         },
       }
     );
@@ -80,6 +81,7 @@ export default function SecuritySettings() {
           type="submit"
           size="sm"
           isLoading={changePasswordMutation.isPending}
+          loadingText="Updating password..."
           className="flex items-center gap-1.5"
         >
           <ShieldAlert className="w-4 h-4" />

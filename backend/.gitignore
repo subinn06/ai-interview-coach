@@ -1,0 +1,16 @@
+# python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+venv/
+
+# environment variables
+.env
+.env.*
+!.env.example
+
+# uploads and database
+uploads/
+*.db

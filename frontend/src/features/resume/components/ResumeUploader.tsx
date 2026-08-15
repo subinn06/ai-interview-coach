@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { UploadCloud, FileText, X } from "lucide-react";
 import { useUploadResume } from "../hooks/useResume";
 import Button from "@/components/ui/Button";
+import { getErrorMessage } from "@/lib/error-handler";
 
 interface ResumeUploaderProps {
   onSuccess?: () => void;
@@ -76,10 +77,9 @@ export default function ResumeUploader({ onSuccess }: ResumeUploaderProps) {
           setProgress(0);
           if (onSuccess) onSuccess();
         },
-        onError: (err: any) => {
-          const message =
-            err.response?.data?.detail || "Failed to upload resume. Please try again.";
-          toast.error(message);
+        onError: (err: unknown) => {
+          toast.error(getErrorMessage(err));
+          setProgress(0);
         },
       }
     );
@@ -172,6 +172,7 @@ export default function ResumeUploader({ onSuccess }: ResumeUploaderProps) {
           <Button
             onClick={handleUpload}
             isLoading={uploadMutation.isPending}
+            loadingText="Uploading resume..."
             size="sm"
           >
             Upload Resume

@@ -14,9 +14,11 @@ class UserRepository:
         )
 
     def get_by_id(self, user_id):
+        import uuid
+        val_id = uuid.UUID(user_id) if isinstance(user_id, str) else user_id
         return (
             self.db.query(User)
-            .filter(User.id == user_id)
+            .filter(User.id == val_id)
             .first()
         )
 

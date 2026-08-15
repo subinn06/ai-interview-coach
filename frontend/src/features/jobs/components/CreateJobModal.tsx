@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -6,6 +7,7 @@ import { createJobSchema, type CreateJobFormData } from "../schemas/jobs.schema"
 import { useCreateJob } from "../hooks/useJobs";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { getErrorMessage } from "@/lib/error-handler";
 
 interface CreateJobModalProps {
   isOpen: boolean;
@@ -14,6 +16,16 @@ interface CreateJobModalProps {
 
 export default function CreateJobModal({ isOpen, onClose }: CreateJobModalProps) {
   const createMutation = useCreateJob();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
   const {
     register,
@@ -33,16 +45,19 @@ export default function CreateJobModal({ isOpen, onClose }: CreateJobModalProps)
         reset();
         onClose();
       },
-      onError: (err: any) => {
-        const message =
-          err.response?.data?.detail || "Failed to create job posting.";
-        toast.error(message);
+      onError: (err: unknown) => {
+        toast.error(getErrorMessage(err));
       },
     });
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="create-job-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+    >
       {/* backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
@@ -52,13 +67,14 @@ export default function CreateJobModal({ isOpen, onClose }: CreateJobModalProps)
       {/* modal card */}
       <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl p-6 border border-slate-100 z-10 animate-in fade-in zoom-in-95">
         <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
-          <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <h2 id="create-job-modal-title" className="text-lg font-bold text-slate-900 flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-blue-600" />
             Add Target Job Description
           </h2>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 p-1 rounded-lg cursor-pointer"
+            aria-label="Close dialog"
+            className="text-slate-400 hover:text-slate-600 p-1 rounded-lg cursor-pointer transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -80,10 +96,11 @@ export default function CreateJobModal({ isOpen, onClose }: CreateJobModalProps)
           />
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-700 tracking-wide">
+            <label htmlFor="create-job-description-text" className="text-xs font-semibold text-slate-700 tracking-wide">
               Job Description Details
             </label>
             <textarea
+              id="create-job-description-text"
               rows={6}
               placeholder="Paste full job posting requirements, responsibilities, and technical skills..."
               className="w-full px-4 py-2.5 text-sm bg-white border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 resize-none font-sans"
@@ -100,7 +117,7 @@ export default function CreateJobModal({ isOpen, onClose }: CreateJobModalProps)
             <Button type="button" variant="secondary" onClick={onClose} size="sm">
               Cancel
             </Button>
-            <Button type="submit" isLoading={createMutation.isPending} size="sm">
+            <Button type="submit" isLoading={createMutation.isPending} loadingText="Saving job target..." size="sm">
               Save Job Target
             </Button>
           </div>

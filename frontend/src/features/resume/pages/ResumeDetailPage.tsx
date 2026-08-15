@@ -11,6 +11,8 @@ import Button from "@/components/ui/Button";
 import EmptyState from "@/components/common/EmptyState";
 import Loader from "@/components/ui/Loader";
 
+import { getErrorMessage } from "@/lib/error-handler";
+
 export default function ResumeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -31,10 +33,8 @@ export default function ResumeDetailPage() {
       onSuccess: (analysis) => {
         toast.success(`Analysis complete! ATS Score: ${analysis.ats_score}%`);
       },
-      onError: (err: any) => {
-        const message =
-          err.response?.data?.detail || "Failed to run analysis.";
-        toast.error(message);
+      onError: (err: unknown) => {
+        toast.error(getErrorMessage(err));
       },
     });
   };
@@ -69,7 +69,7 @@ export default function ResumeDetailPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-8 max-w-6xl mx-auto">
       {/* navigation header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -80,7 +80,7 @@ export default function ResumeDetailPage() {
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to Resume List
           </button>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
             <FileText className="w-6 h-6 text-blue-600" />
             {resume.filename}
           </h1>
@@ -92,6 +92,7 @@ export default function ResumeDetailPage() {
         <Button
           onClick={handleAnalyze}
           isLoading={analyzeMutation.isPending}
+          loadingText="Analyzing with AI..."
           className="flex items-center gap-2"
         >
           <Sparkles className="w-4 h-4 text-purple-200" />
@@ -132,7 +133,7 @@ export default function ResumeDetailPage() {
                 </button>
 
                 {showRawText && (
-                  <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200 max-h-96 overflow-y-auto font-mono text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
+                  <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200 max-h-96 overflow-y-auto font-mono text-xs text-slate-700 leading-relaxed whitespace-pre-wrap break-words max-w-full overflow-x-hidden">
                     {resume.extracted_text}
                   </div>
                 )}

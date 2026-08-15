@@ -15,8 +15,6 @@ router = APIRouter(
 )
 
 @router.post("", response_model=ResumeResponse, status_code=status.HTTP_201_CREATED)
-@router.post("/", response_model=ResumeResponse, status_code=status.HTTP_201_CREATED)
-@router.post("/upload", response_model=ResumeResponse, status_code=status.HTTP_201_CREATED)
 def upload_resume(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
@@ -27,7 +25,6 @@ def upload_resume(
     return resume
 
 @router.get("", response_model=list[ResumeResponse])
-@router.get("/", response_model=list[ResumeResponse])
 def get_user_resumes(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)

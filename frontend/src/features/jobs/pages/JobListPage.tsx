@@ -21,6 +21,8 @@ import Button from "@/components/ui/Button";
 import EmptyState from "@/components/common/EmptyState";
 import { SkeletonCard } from "@/components/common/Skeleton";
 
+import { getErrorMessage } from "@/lib/error-handler";
+
 export default function JobListPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,10 +47,8 @@ export default function JobListPage() {
       onSuccess: () => {
         toast.success(`Analysis complete for "${title}"!`);
       },
-      onError: (err: any) => {
-        const message =
-          err.response?.data?.detail || "Failed to analyze job posting.";
-        toast.error(message);
+      onError: (err: unknown) => {
+        toast.error(getErrorMessage(err));
       },
     });
   };
@@ -59,23 +59,22 @@ export default function JobListPage() {
         onSuccess: () => {
           toast.success(`"${title}" deleted.`);
         },
-        onError: (err: any) => {
-          const message = err.response?.data?.detail || "Failed to delete job.";
-          toast.error(message);
+        onError: (err: unknown) => {
+          toast.error(getErrorMessage(err));
         },
       });
     }
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto">
       {/* top header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
             Job Target Descriptions
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-sm text-slate-500 mt-1">
             Add target job postings and run Gemini AI keyword/skill extraction.
           </p>
         </div>
@@ -95,6 +94,7 @@ export default function JobListPage() {
           <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
           <input
             type="text"
+            aria-label="Search target job descriptions"
             placeholder="Search by job title, company, or skills..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -111,7 +111,7 @@ export default function JobListPage() {
 
       {/* job cards grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />
@@ -125,17 +125,17 @@ export default function JobListPage() {
       ) : !filteredJobs || filteredJobs.length === 0 ? (
         <EmptyState
           icon={Briefcase}
-          title={searchQuery ? "No matching job targets" : "No Target Jobs Added Yet"}
+          title={searchQuery ? "No matching job targets" : "No job descriptions yet."}
           description={
             searchQuery
               ? `No job descriptions matched "${searchQuery}".`
-              : "Add your first target job description to extract required skills and calculate resume match gaps."
+              : "Add a job you're preparing for."
           }
-          actionLabel={searchQuery ? undefined : "Add First Target Job"}
+          actionLabel={searchQuery ? undefined : "Add Job"}
           onAction={searchQuery ? undefined : () => setIsModalOpen(true)}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredJobs.map((job) => {
             const hasAnalysis = Boolean(job.analysis);
 
@@ -196,6 +196,7 @@ export default function JobListPage() {
                     variant="secondary"
                     className="flex-1 text-xs"
                     isLoading={analyzeMutation.isPending && analyzeMutation.variables === job.id}
+                    loadingText="Analyzing..."
                   >
                     <Sparkles className="w-3.5 h-3.5 mr-1 text-purple-600" />
                     Analyze
@@ -207,6 +208,7 @@ export default function JobListPage() {
                     variant="secondary"
                     className="px-2.5 text-xs"
                     title="View Details"
+                    aria-label={`View details for ${job.job_title}`}
                   >
                     <Eye className="w-3.5 h-3.5 text-slate-600" />
                   </Button>
@@ -217,6 +219,7 @@ export default function JobListPage() {
                     variant="ghost"
                     className="px-2.5 text-xs text-red-500 hover:text-red-700 hover:bg-red-50"
                     title="Delete Job"
+                    aria-label={`Delete job target ${job.job_title}`}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>

@@ -28,7 +28,7 @@ export default function SkillChart({ skills }: SkillChartProps) {
         Skill Profile Breakdown
       </h3>
 
-      <div className="grid grid-cols-2 gap-4 pt-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
         {dimensions.map((item, idx) => (
           <div key={idx} className="p-3.5 bg-slate-50 border border-slate-100 rounded-xl space-y-2 text-center">
             <span className="text-xs font-semibold text-slate-600 block">{item.name}</span>

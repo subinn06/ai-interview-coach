@@ -8,6 +8,8 @@ import { useRegister } from "../hooks/useRegister";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 
+import { getErrorMessage } from "@/lib/error-handler";
+
 interface RegisterFormProps {
   onSuccess?: () => void;
 }
@@ -36,10 +38,8 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
           toast.success("Account created successfully! Please sign in.");
           if (onSuccess) onSuccess();
         },
-        onError: (err: any) => {
-          const message =
-            err.response?.data?.detail || "Registration failed. Please try again.";
-          toast.error(message);
+        onError: (err: unknown) => {
+          toast.error(getErrorMessage(err));
         },
       }
     );
@@ -73,6 +73,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         />
         <button
           type="button"
+          aria-label={showPassword ? "Hide password" : "Show password"}
           onClick={() => setShowPassword(!showPassword)}
           className="absolute right-3 top-9 text-slate-400 hover:text-slate-600 cursor-pointer"
         >
@@ -92,6 +93,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         type="submit"
         className="w-full mt-2 flex items-center justify-center gap-2"
         isLoading={registerMutation.isPending}
+        loadingText="Creating account..."
       >
         <UserPlus className="w-4 h-4" />
         Create Account

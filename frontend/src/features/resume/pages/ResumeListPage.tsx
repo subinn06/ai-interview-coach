@@ -20,6 +20,8 @@ import Button from "@/components/ui/Button";
 import EmptyState from "@/components/common/EmptyState";
 import { SkeletonCard } from "@/components/common/Skeleton";
 
+import { getErrorMessage } from "@/lib/error-handler";
+
 export default function ResumeListPage() {
   const [showUploader, setShowUploader] = useState(false);
   const navigate = useNavigate();
@@ -34,10 +36,8 @@ export default function ResumeListPage() {
       onSuccess: (analysis) => {
         toast.success(`Analysis complete! ATS Score: ${analysis.ats_score}%`);
       },
-      onError: (err: any) => {
-        const message =
-          err.response?.data?.detail || "Failed to analyze resume.";
-        toast.error(message);
+      onError: (err: unknown) => {
+        toast.error(getErrorMessage(err));
       },
     });
   };
@@ -48,23 +48,22 @@ export default function ResumeListPage() {
         onSuccess: () => {
           toast.success(`"${name}" deleted.`);
         },
-        onError: (err: any) => {
-          const message = err.response?.data?.detail || "Failed to delete resume.";
-          toast.error(message);
+        onError: (err: unknown) => {
+          toast.error(getErrorMessage(err));
         },
       });
     }
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto">
       {/* top header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
             Resume Manager
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-sm text-slate-500 mt-1">
             Upload PDF resumes and evaluate AI ATS match compatibility.
           </p>
         </div>
@@ -85,7 +84,7 @@ export default function ResumeListPage() {
 
       {/* resume cards grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />
@@ -99,13 +98,13 @@ export default function ResumeListPage() {
       ) : !resumes || resumes.length === 0 ? (
         <EmptyState
           icon={FileText}
-          title="No Resumes Uploaded Yet"
-          description="Upload your first PDF resume to run Gemini ATS checks and skill extraction."
-          actionLabel="Upload First Resume"
+          title="No resumes yet."
+          description="Upload your resume to get AI-powered feedback."
+          actionLabel="Upload Resume"
           onAction={() => setShowUploader(true)}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {resumes.map((resume) => {
             const latestAnalysis =
               resume.analyses && resume.analyses.length > 0
@@ -151,6 +150,7 @@ export default function ResumeListPage() {
                     variant="secondary"
                     className="flex-1 text-xs"
                     isLoading={analyzeMutation.isPending && analyzeMutation.variables === resume.id}
+                    loadingText="Analyzing..."
                   >
                     <Sparkles className="w-3.5 h-3.5 mr-1 text-purple-600" />
                     Analyze
@@ -162,6 +162,7 @@ export default function ResumeListPage() {
                     variant="secondary"
                     className="px-2.5 text-xs"
                     title="View Details"
+                    aria-label={`View details for ${resume.filename}`}
                   >
                     <Eye className="w-3.5 h-3.5 text-slate-600" />
                   </Button>
@@ -172,6 +173,7 @@ export default function ResumeListPage() {
                     variant="ghost"
                     className="px-2.5 text-xs text-red-500 hover:text-red-700 hover:bg-red-50"
                     title="Delete Resume"
+                    aria-label={`Delete resume ${resume.filename}`}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>

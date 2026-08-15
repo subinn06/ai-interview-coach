@@ -20,15 +20,15 @@ export default function ReportsPage() {
   const { data: skills } = useSkillAnalytics();
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto">
       {/* header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
             <FileText className="w-6 h-6 text-purple-600" />
             AI Coaching Reports & Analytics
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-sm text-slate-500 mt-1">
             Track your mock interview score evolution and multi-dimensional skill profiles over time.
           </p>
         </div>
@@ -50,14 +50,14 @@ export default function ReportsPage() {
       </div>
 
       {/* reports history list */}
-      <div className="space-y-4 pt-4 border-t border-slate-200">
-        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+      <div className="space-y-6 pt-6 border-t border-slate-200">
+        <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
           <Award className="w-5 h-5 text-indigo-600" />
           Individual Evaluation Reports
-        </h3>
+        </h2>
 
         {loadingReports ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <SkeletonCard />
             <SkeletonCard />
             <SkeletonCard />
@@ -65,13 +65,13 @@ export default function ReportsPage() {
         ) : !reports || reports.length === 0 ? (
           <EmptyState
             icon={FileText}
-            title="No Evaluation Reports Generated Yet"
+            title="Your interview reports will appear here."
             description="Complete your first AI technical mock interview to receive a structured evaluation report."
-            actionLabel="Start First Mock Interview"
+            actionLabel="Start Interview"
             onAction={() => navigate("/interview/setup")}
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {reports.map((r) => {
               const score = r.overall_score;
               let scoreColor = "bg-emerald-50 text-emerald-700 border-emerald-200";

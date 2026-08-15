@@ -1,3 +1,4 @@
+import { memo } from "react";
 import Card from "@/components/ui/Card";
 import { HelpCircle, Tag, Layers } from "lucide-react";
 
@@ -9,7 +10,7 @@ interface QuestionCardProps {
   totalQuestions?: number;
 }
 
-export default function QuestionCard({
+const QuestionCard = memo(function QuestionCard({
   questionText,
   category,
   difficulty,
@@ -57,4 +58,6 @@ export default function QuestionCard({
       </div>
     </Card>
   );
-}
+});
+
+export default QuestionCard;

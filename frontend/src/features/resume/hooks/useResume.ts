@@ -11,6 +11,9 @@ export const useResumes = () => {
   return useQuery({
     queryKey: ["resumes"],
     queryFn: getResumesApi,
+    staleTime: 5 * 60 * 1000, // 5 minutes - only changes on upload/delete
+    gcTime: 20 * 60 * 1000,   // 20 minutes
+    retry: 1,
   });
 };
 
@@ -19,6 +22,9 @@ export const useResume = (id?: string) => {
     queryKey: ["resumes", id],
     queryFn: () => getResumeApi(id!),
     enabled: Boolean(id),
+    staleTime: 2 * 60 * 1000, // 2 minutes - detail page may trigger analyze
+    gcTime: 15 * 60 * 1000,   // 15 minutes
+    retry: 1,
   });
 };
 

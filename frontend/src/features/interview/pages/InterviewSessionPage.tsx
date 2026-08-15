@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/error-handler";
 import {
   useInterview,
   useSubmitAnswer,
@@ -35,6 +36,8 @@ export default function InterviewSessionPage() {
   );
   const [lastEvaluation, setLastEvaluation] = useState<AnswerEvaluation | null>(null);
   const [isFinished, setIsFinished] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [lastSubmittedAnswer, setLastSubmittedAnswer] = useState<string>("");
 
   // sync current question from session data if not set yet
   if (session && !currentQuestion && !isFinished) {
@@ -81,7 +84,10 @@ export default function InterviewSessionPage() {
   const handleSubmitAnswer = (answerText: string) => {
     if (!currentQuestion) return;
 
+    setSubmissionError(null);
+    setLastSubmittedAnswer(answerText);
     toast.info("AI is evaluating your response...");
+
     submitAnswerMutation.mutate(
       {
         question_id: currentQuestion.id,
@@ -89,6 +95,8 @@ export default function InterviewSessionPage() {
       },
       {
         onSuccess: (res) => {
+          setSubmissionError(null);
+          setLastSubmittedAnswer("");
           setLastEvaluation(res.evaluation);
           if (res.next_question) {
             // save next question for when candidate clicks continue
@@ -99,17 +107,24 @@ export default function InterviewSessionPage() {
           }
           toast.success("Answer evaluated!");
         },
-        onError: (err: any) => {
-          const message =
-            err.response?.data?.detail || "Failed to submit answer for AI evaluation.";
-          toast.error(message);
+        onError: (err: unknown) => {
+          const errMsg = getErrorMessage(err);
+          setSubmissionError(errMsg);
+          toast.error(errMsg);
         },
       }
     );
   };
 
+  const handleRetrySubmit = () => {
+    if (lastSubmittedAnswer) {
+      handleSubmitAnswer(lastSubmittedAnswer);
+    }
+  };
+
   const handleContinue = () => {
     setLastEvaluation(null);
+    setSubmissionError(null);
 
     if (isFinished || !currentQuestion) {
       // complete interview and navigate to report
@@ -175,6 +190,8 @@ export default function InterviewSessionPage() {
           <AnswerEditor
             onSubmit={handleSubmitAnswer}
             isLoading={submitAnswerMutation.isPending}
+            error={submissionError}
+            onRetry={handleRetrySubmit}
           />
         </div>
       ) : (

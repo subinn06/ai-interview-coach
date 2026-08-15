@@ -4,12 +4,13 @@ import { useAuthStore } from "@/store/auth-store";
 import Sidebar from "@/components/common/Sidebar";
 import Navbar from "@/components/common/Navbar";
 import MobileDrawer from "@/components/common/MobileDrawer";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 export default function DashboardLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { accessToken } = useAuthStore();
+  const { accessToken, isAuthenticated } = useAuthStore();
 
-  if (!accessToken) {
+  if (!accessToken || !isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
@@ -30,7 +31,9 @@ export default function DashboardLayout() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Navbar onMobileMenuToggle={() => setMobileMenuOpen(true)} />
         <main className="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-8">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
     </div>

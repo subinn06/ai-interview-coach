@@ -22,7 +22,7 @@ export default function DashboardPage() {
   const { data: skills, isLoading: isSkillsLoading } = useSkillBreakdown();
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto">
       {/* welcome banner */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 md:p-8 text-white shadow-lg shadow-blue-500/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -30,7 +30,7 @@ export default function DashboardPage() {
             <Zap className="w-3.5 h-3.5" />
             AI Interview Coach Active
           </span>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+          <h1 className="text-3xl font-extrabold tracking-tight">
             Welcome back, {user?.full_name || "Candidate"}!
           </h1>
           <p className="text-blue-100 text-sm mt-1 max-w-xl">
@@ -40,7 +40,7 @@ export default function DashboardPage() {
       </div>
 
       {/* summary statistics cards grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {isSummaryLoading ? (
           <>
             <SkeletonCard />

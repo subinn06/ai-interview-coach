@@ -47,7 +47,7 @@ export default function ReportPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-8 max-w-5xl mx-auto">
       {/* top header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -58,7 +58,7 @@ export default function ReportPage() {
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to AI Reports History
           </button>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-purple-600" />
             Comprehensive Evaluation Report
           </h1>

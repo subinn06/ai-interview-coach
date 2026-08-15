@@ -15,12 +15,12 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-8 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
           Candidate Profile
         </h1>
-        <p className="text-sm text-slate-500 mt-0.5">
+        <p className="text-sm text-slate-500 mt-1">
           Manage your personal information and candidate credentials.
         </p>
       </div>

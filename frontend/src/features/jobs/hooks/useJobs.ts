@@ -12,6 +12,9 @@ export const useJobs = () => {
   return useQuery({
     queryKey: ["jobs"],
     queryFn: getJobsApi,
+    staleTime: 5 * 60 * 1000, // 5 minutes - only changes on create/delete
+    gcTime: 20 * 60 * 1000,   // 20 minutes
+    retry: 1,
   });
 };
 
@@ -20,6 +23,9 @@ export const useJob = (id?: string) => {
     queryKey: ["jobs", id],
     queryFn: () => getJobApi(id!),
     enabled: Boolean(id),
+    staleTime: 2 * 60 * 1000, // 2 minutes - detail page may trigger analyze
+    gcTime: 15 * 60 * 1000,   // 15 minutes
+    retry: 1,
   });
 };
 

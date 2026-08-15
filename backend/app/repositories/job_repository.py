@@ -15,12 +15,14 @@ class JobRepository:
         return job_desc
 
     def get_by_id(self, job_id: UUID) -> JobDescription | None:
-        return self.db.query(JobDescription).filter(JobDescription.id == job_id).first()
+        val_id = UUID(job_id) if isinstance(job_id, str) else job_id
+        return self.db.query(JobDescription).filter(JobDescription.id == val_id).first()
 
     def get_by_user(self, user_id: UUID) -> list[JobDescription]:
+        val_id = UUID(user_id) if isinstance(user_id, str) else user_id
         return (
             self.db.query(JobDescription)
-            .filter(JobDescription.user_id == user_id)
+            .filter(JobDescription.user_id == val_id)
             .order_by(JobDescription.created_at.desc())
             .all()
         )
@@ -37,8 +39,9 @@ class JobRepository:
         return analysis
 
     def get_analysis_by_job(self, job_description_id: UUID) -> JobAnalysis | None:
+        val_id = UUID(job_description_id) if isinstance(job_description_id, str) else job_description_id
         return (
             self.db.query(JobAnalysis)
-            .filter(JobAnalysis.job_description_id == job_description_id)
+            .filter(JobAnalysis.job_description_id == val_id)
             .first()
         )

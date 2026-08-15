@@ -55,6 +55,7 @@ export default function Navbar({ onMobileMenuToggle }: NavbarProps) {
       <div className="flex items-center gap-4">
         {/* notification bell placeholder */}
         <button
+          aria-label="Notifications"
           className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl relative cursor-pointer"
           title="Notifications"
         >
@@ -65,6 +66,7 @@ export default function Navbar({ onMobileMenuToggle }: NavbarProps) {
         {/* user profile dropdown */}
         <div className="relative">
           <button
+            aria-label="User account menu"
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-50 cursor-pointer transition-all"
           >
