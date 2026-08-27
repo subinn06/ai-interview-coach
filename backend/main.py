@@ -8,19 +8,19 @@ from app.api.interview import router as interview_router
 from app.api.dashboard import router as dashboard_router
 from app.api.report import router as report_router
 
+from app.core.config import settings
+
 app = FastAPI(
     title="AI Interview Coach",
     version="1.0.0"
 )
 
-# enable cors for frontend development
+# environment driven cors configuration
+cors_origins = [origin.strip() for origin in settings.CORS_ORIGINS.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-    ],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

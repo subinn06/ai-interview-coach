@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
@@ -6,19 +7,6 @@ class JobDescriptionCreate(BaseModel):
     job_title: str
     company_name: str
     description: str
-
-class JobDescriptionResponse(BaseModel):
-    id: UUID
-    user_id: UUID | None = None
-    job_title: str
-    company_name: str
-    description: str
-    created_at: datetime | None = None
-    updated_at: datetime | None = None
-    analysis: JobAnalysisResponse | None = None
-
-    class Config:
-        from_attributes = True
 
 class JobAnalysisResponse(BaseModel):
     id: UUID
@@ -33,3 +21,17 @@ class JobAnalysisResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class JobDescriptionResponse(BaseModel):
+    id: UUID
+    user_id: UUID | None = None
+    job_title: str
+    company_name: str
+    description: str
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+    analysis: JobAnalysisResponse | None = None
+
+    class Config:
+        from_attributes = True
+
