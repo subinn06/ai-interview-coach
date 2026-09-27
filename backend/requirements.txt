@@ -26,3 +26,5 @@ pdfplumber==0.11.10
 # testing & utilities
 httpx==0.28.1
 pytest==9.1.1
+
+boto3

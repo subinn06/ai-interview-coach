@@ -1,16 +1,20 @@
+import io
 import pdfplumber
 
+
 class PDFService:
-    def extract_text(self, file_path: str) -> str:
+    def extract_text(self, file_bytes: bytes) -> str:
         extracted_text = ""
+
         try:
-            with pdfplumber.open(file_path) as pdf:
+            with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
                 for page in pdf.pages:
                     text = page.extract_text()
                     if text:
                         extracted_text += text + "\n"
+
         except Exception as e:
-            print(f"[PDFService] Extraction warning for {file_path}: {e}")
+            print(f"[PDFService] Extraction warning: {e}")
 
         return self.clean_text(extracted_text)
 

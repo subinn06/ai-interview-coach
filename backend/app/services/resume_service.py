@@ -22,26 +22,30 @@ class ResumeService:
         self.analyzer = ResumeAnalyzer()
 
     def upload(self, user: User, file: UploadFile) -> Resume:
-        # validate and save the file to local disk
-        stored_filename, file_path = self.file_service.save_resume(file)
-        
-        # parse text from the pdf file
-        extracted_text = self.pdf_service.extract_text(file_path)
-        
+        # validate and upload the file to s3
+        stored_filename, s3_key, file_bytes = self.file_service.save_resume(
+            file, str(user.id)
+        )
+
+        # parse text from the pdf bytes
+        extracted_text = self.pdf_service.extract_text(file_bytes)
+
         # save the resume record in the database
         resume = Resume(
             user_id=user.id,
             filename=file.filename,
             stored_filename=stored_filename,
-            file_path=file_path,
+            file_path=s3_key,
             extracted_text=extracted_text
         )
+
         created_resume = self.repo.create(resume)
-        
+
         # track event
         AnalyticsService(self.repo.db).track_event(
             user.id, "RESUME_UPLOADED", {"filename": file.filename}
         )
+
         return created_resume
 
     def analyze(self, user_id: UUID, resume_id: UUID) -> ResumeAnalysis:
@@ -86,5 +90,5 @@ class ResumeService:
 
     def delete_resume(self, user_id: UUID, resume_id: UUID) -> None:
         resume = self.get_resume(user_id, resume_id)
-        self.file_service.delete_resume(resume.stored_filename)
+        self.file_service.delete_resume(resume.file_path)
         self.repo.delete(resume)
